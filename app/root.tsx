@@ -10,12 +10,13 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  useLocation,
 } from 'react-router';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
-import {PageLayout} from './components/PageLayout';
+import {Layout as AppLayout} from './components/Layout';
 
 export type RootLoader = typeof loader;
 
@@ -162,7 +163,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
             shop={data.shop}
             consent={data.consent}
           >
-            <PageLayout {...data}>{children}</PageLayout>
+            <ConditionalLayout>{children}</ConditionalLayout>
           </Analytics.Provider>
         ) : (
           children
@@ -172,6 +173,19 @@ export function Layout({children}: {children?: React.ReactNode}) {
       </body>
     </html>
   );
+}
+
+function ConditionalLayout({children}: {children: React.ReactNode}) {
+  const location = useLocation();
+  
+  // Don't show layout (navbar/footer) on the landing page
+  if (location.pathname === '/') {
+    return <>{children}</>;
+  }
+  
+  // Show full layout for all other pages
+  const data = useRouteLoaderData<RootLoader>('root');
+  return <AppLayout {...(data as any)}>{children}</AppLayout>;
 }
 
 export default function App() {

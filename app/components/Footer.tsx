@@ -1,129 +1,79 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
-import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {useState} from 'react';
+import {NavLink, useNavigation} from 'react-router';
 
 interface FooterProps {
-  footer: Promise<FooterQuery | null>;
-  header: HeaderQuery;
-  publicStoreDomain: string;
+  footer?: any;
+  header?: any;
+  publicStoreDomain?: string;
 }
 
 export function Footer({
-  footer: footerPromise,
+  footer,
   header,
   publicStoreDomain,
 }: FooterProps) {
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="footer">
+      <div className="footer-content">
+        {/* Email Subscription Section */}
+        <div className="footer-email-section">
+          <h3 className="footer-email-title">Join our email list</h3>
+          <p className="footer-email-description">Get exclusive deals and early access to new products.</p>
+          <EmailSubscriptionForm />
+        </div>
+
+        {/* Copyright and Legal Links Section */}
+        <div className="footer-legal-section">
+          <p className="footer-copyright">
+            © 2025 Foreign X-Change, Powered by{' '}
+            <a href="https://shopify.com" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Shopify
+            </a>{' '}
+            <NavLink to="/policies" className="footer-link">
+              Terms and Policies
+            </NavLink>
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 }
 
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
 
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
+function EmailSubscriptionForm() {
+  const [email, setEmail] = useState('');
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === 'submitting';
 
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
+  const handleSubmit = (e: React.FormEvent) => {
+    // For now, just prevent default and show success
+    e.preventDefault();
+    if (email) {
+      alert('Thank you for subscribing!');
+      setEmail('');
+    }
   };
+
+  return (
+    <form onSubmit={handleSubmit} className="footer-email-form">
+      <div className="footer-email-input-container">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email address"
+          required
+          className="footer-email-input"
+        />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="footer-email-submit"
+        >
+          →
+        </button>
+      </div>
+    </form>
+  );
 }
+
