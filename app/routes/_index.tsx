@@ -46,15 +46,16 @@ export default function Index() {
         opacity: isFading ? 0 : 1,
         transition: 'opacity 1s ease-out'
       }}>
-        <div style={{textAlign: 'center'}}>
+        <div style={{textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <img 
             src="/logo.webp" 
             alt="Foreign X-Change" 
             style={{
-              width: '600px',
-              height: '600px',
+              width: '450px',
+              height: '450px',
               objectFit: 'contain',
-              marginBottom: '0'
+              marginBottom: '0',
+              display: 'block'
             }}
           />
           <div style={{display: 'flex', justifyContent: 'center'}}>

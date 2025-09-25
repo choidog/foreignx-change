@@ -13,6 +13,7 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {NavigationFade} from '~/components/NavigationFade';
 
 export type LayoutProps = {
   [key: string]: any;
@@ -27,7 +28,7 @@ export function Layout({
   publicStoreDomain,
 }: LayoutProps) {
   return (
-    <>
+    <NavigationFade>
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside menu={header?.menu} />
@@ -38,7 +39,7 @@ export function Layout({
         header={header}
         publicStoreDomain={publicStoreDomain}
       />
-    </>
+    </NavigationFade>
   );
 }
 

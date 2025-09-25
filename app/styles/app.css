@@ -1931,7 +1931,7 @@ aside main {
 }
 
 .mobile-menu-item {
-  display: block;
+  display: inline-block;
   padding: 1rem;
   font-size: 1.25rem;
   font-weight: 600;
@@ -1948,8 +1948,29 @@ aside main {
 }
 
 .mobile-menu-item.active {
+  background-color: transparent;
+  color: #000;
+  position: relative;
+}
+
+.mobile-menu-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
   background-color: #000;
-  color: #fff;
+  animation: underlineSlide 0.3s ease-out forwards;
+}
+
+@keyframes underlineSlide {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 .mobile-menu-cart-btn {

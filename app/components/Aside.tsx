@@ -59,11 +59,21 @@ function CloseAside() {
   );
 }
 
-// Export a dummy useAside function for compatibility
+// Export a proper useAside function that can close the cart
 export function useAside() {
+  const close = () => {
+    // Close the cart by removing the hash and updating the URL
+    window.location.hash = '';
+    // Also try to close any open overlays by removing the expanded class
+    const overlays = document.querySelectorAll('.overlay.expanded');
+    overlays.forEach(overlay => {
+      overlay.classList.remove('expanded');
+    });
+  };
+  
   return {
     type: 'closed',
     open: () => {},
-    close: () => {},
+    close,
   };
 }

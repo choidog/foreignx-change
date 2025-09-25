@@ -3,6 +3,7 @@ import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {PageFade} from '~/components/PageFade';
 
 export async function loader(args: LoaderFunctionArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -46,7 +47,7 @@ export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collections">
+    <PageFade className="collections">
       <h1>Collections</h1>
       <PaginatedResourceSection
         connection={collections}
@@ -60,7 +61,7 @@ export default function Collections() {
           />
         )}
       </PaginatedResourceSection>
-    </div>
+    </PageFade>
   );
 }
 

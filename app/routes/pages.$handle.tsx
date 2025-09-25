@@ -1,6 +1,7 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from 'react-router';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {PageFade} from '~/components/PageFade';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
@@ -62,12 +63,12 @@ export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
   return (
-    <div className="page">
+    <PageFade className="page">
       <header>
         <h1>{page.title}</h1>
       </header>
       <main dangerouslySetInnerHTML={{__html: page.body}} />
-    </div>
+    </PageFade>
   );
 }
 

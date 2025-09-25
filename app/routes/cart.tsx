@@ -8,6 +8,7 @@ import {
   type HeadersFunction,
 } from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
+import {PageFade} from '~/components/PageFade';
 
 export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];
@@ -95,9 +96,9 @@ export default function Cart() {
   const cart = useLoaderData<typeof loader>();
 
   return (
-    <div className="cart">
+    <PageFade className="cart">
       <h1>Cart</h1>
       <CartMain layout="page" cart={cart} />
-    </div>
+    </PageFade>
   );
 }

@@ -4,6 +4,7 @@ import {
 } from '@shopify/remix-oxygen';
 import {Form, NavLink, Outlet, useLoaderData} from 'react-router';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import {PageFade} from '~/components/PageFade';
 
 export function shouldRevalidate() {
   return true;
@@ -38,14 +39,14 @@ export default function AccountLayout() {
     : 'Account Details';
 
   return (
-    <div className="account">
+    <PageFade className="account">
       <h1>{heading}</h1>
       <br />
       <AccountMenu />
       <br />
       <br />
       <Outlet context={{customer}} />
-    </div>
+    </PageFade>
   );
 }
 

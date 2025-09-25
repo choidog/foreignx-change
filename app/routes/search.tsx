@@ -6,6 +6,7 @@ import {useLoaderData, type MetaFunction} from 'react-router';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
+import {PageFade} from '~/components/PageFade';
 import {
   type RegularSearchReturn,
   type PredictiveSearchReturn,
@@ -40,7 +41,7 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
+    <PageFade className="search">
       <h1>Search</h1>
       <SearchForm>
         {({inputRef}) => (
@@ -72,7 +73,7 @@ export default function SearchPage() {
         </SearchResults>
       )}
       <Analytics.SearchView data={{searchTerm: term, searchResults: result}} />
-    </div>
+    </PageFade>
   );
 }
 
