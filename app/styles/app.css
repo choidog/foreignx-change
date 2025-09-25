@@ -1119,6 +1119,10 @@ button.reset:hover:not(:has(> *)) {
   margin-bottom: 2rem;
 }
 
+.collection {
+  margin: 0 1rem;
+}
+
 .product-item img {
   height: auto;
   width: 100%;
@@ -1473,6 +1477,7 @@ button.reset:hover:not(:has(> *)) {
 
 .recommended-products {
   padding: 4rem 0;
+  margin: 0 1rem;
 }
 
 /* Product grid styling */
