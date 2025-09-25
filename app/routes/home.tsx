@@ -1,7 +1,7 @@
 import type {V2_MetaFunction} from '@shopify/remix-oxygen';
 import {type LoaderArgs} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link} from 'react-router';
-import {Suspense} from 'react';
+import {Suspense, useState, useEffect} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {
   RecommendedProductsQuery,
@@ -39,8 +39,25 @@ export async function loader({context}: LoaderArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100); // Small delay to ensure smooth transition
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
-    <div className="home">
+    <div 
+      className="home"
+      style={{
+        opacity: isLoaded ? 1 : 0,
+        transition: 'opacity 1s ease-in-out'
+      }}
+    >
       <ScrollCarouselSection />
       <Suspense fallback={<div>Loading products...</div>}>
         <Await resolve={(data as any).recommendedProducts}>

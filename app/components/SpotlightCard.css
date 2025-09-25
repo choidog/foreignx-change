@@ -5,6 +5,7 @@
   background-color: #111;
   padding: 0.5rem;
   overflow: hidden;
+  display: inline-block;
   --mouse-x: 50%;
   --mouse-y: 50%;
   --spotlight-color: rgba(255, 255, 255, 0.05);
