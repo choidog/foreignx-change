@@ -1,5 +1,6 @@
 import {redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, type MetaFunction} from 'react-router';
+import {useLoaderData, type MetaFunction, Await} from 'react-router';
+import {Suspense} from 'react';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -11,6 +12,7 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {SuggestedProducts} from '~/components/SuggestedProducts';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
@@ -74,14 +76,25 @@ async function loadCriticalData({
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  // Put any API calls that is not critical to be available on first page render
-  // For example: product reviews, product recommendations, social feeds.
+  const {storefront} = context;
+  const {handle} = params;
 
-  return {};
+  if (!handle) {
+    return {};
+  }
+
+  // Fetch suggested products based on the current product's collection or similar products
+  const suggestedProducts = storefront.query(SUGGESTED_PRODUCTS_QUERY, {
+    variables: {handle, first: 4},
+  });
+
+  return {
+    suggestedProducts,
+  };
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, suggestedProducts} = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -102,28 +115,30 @@ export default function Product() {
   const {title, descriptionHtml} = product;
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+    <div className="product-page">
+      <div className="product-container">
+        <div className="product-image-section">
+          <ProductImage image={selectedVariant?.image} />
+        </div>
+        
+        <div className="product-details-section">
+          <div className="product-info">
+            <h1 className="product-title">{title}</h1>
+            <div className="product-price">
+              <ProductPrice
+                price={selectedVariant?.price}
+                compareAtPrice={selectedVariant?.compareAtPrice}
+              />
+            </div>
+          </div>
+          
+          <ProductForm
+            productOptions={productOptions}
+            selectedVariant={selectedVariant}
+          />
+        </div>
       </div>
+      
       <Analytics.ProductView
         data={{
           products: [
@@ -139,6 +154,18 @@ export default function Product() {
           ],
         }}
       />
+      
+      <Suspense fallback={<div>Loading suggested products...</div>}>
+        <Await resolve={suggestedProducts}>
+          {(data) => {
+            // Extract products from the nested structure
+            const products = data?.product?.collections?.nodes?.[0]?.products?.nodes || [];
+            // Filter out the current product from suggestions
+            const suggestedProducts = products.filter(p => p.id !== product.id);
+            return <SuggestedProducts products={suggestedProducts} />;
+          }}
+        </Await>
+      </Suspense>
     </div>
   );
 }
@@ -233,4 +260,49 @@ const PRODUCT_QUERY = `#graphql
     }
   }
   ${PRODUCT_FRAGMENT}
+` as const;
+
+const SUGGESTED_PRODUCT_FRAGMENT = `#graphql
+  fragment SuggestedProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+  }
+` as const;
+
+const SUGGESTED_PRODUCTS_QUERY = `#graphql
+  query SuggestedProducts(
+    $country: CountryCode
+    $handle: String!
+    $language: LanguageCode
+    $first: Int!
+  ) @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+      id
+      collections(first: 1) {
+        nodes {
+          products(first: $first, filters: {available: true}) {
+            nodes {
+              ...SuggestedProduct
+            }
+          }
+        }
+      }
+    }
+  }
+  ${SUGGESTED_PRODUCT_FRAGMENT}
 ` as const;

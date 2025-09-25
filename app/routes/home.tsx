@@ -67,12 +67,19 @@ export default function Homepage() {
 
 function ScrollCarouselSection() {
   const images = getScrollCarouselImages();
-  const { isVisible, elementRef } = useScrollAnimation();
+  const { isVisible, isFadingOut, elementRef } = useScrollAnimation({
+    threshold: 0.2,
+    rootMargin: '0px 0px -150px 0px'
+  });
   
   return (
     <section 
       ref={elementRef}
-      className={`scroll-carousel-section scroll-animate ${isVisible ? 'animate-in' : ''}`}
+      className={`scroll-carousel-section scroll-animate ${
+        isVisible ? 'animate-in' : ''
+      } ${
+        isFadingOut ? 'fade-out' : ''
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4">
         <ScrollCarouselComponent 
@@ -95,12 +102,19 @@ function RecommendedProducts({
 }: {
   products: Promise<RecommendedProductsQuery>;
 }) {
-  const { isVisible, elementRef } = useScrollAnimation();
+  const { isVisible, isFadingOut, elementRef } = useScrollAnimation({
+    threshold: 0.15,
+    rootMargin: '0px 0px -100px 0px'
+  });
   
   return (
     <div 
       ref={elementRef}
-      className={`recommended-products max-w-7xl mx-auto px-4 py-12 scroll-animate ${isVisible ? 'animate-in' : ''}`}
+      className={`recommended-products max-w-7xl mx-auto px-4 py-12 scroll-animate ${
+        isVisible ? 'animate-in' : ''
+      } ${
+        isFadingOut ? 'fade-out' : ''
+      }`}
     >
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Products</h2>
@@ -142,7 +156,14 @@ function RecommendedProducts({
                   return (
                     <Link
                       key={product.id}
-                      className={`group block scroll-animate-stagger ${isVisible ? 'animate-in' : ''}`}
+                      className={`group block scroll-animate-stagger ${
+                        isVisible ? 'animate-in' : ''
+                      } ${
+                        isFadingOut ? 'fade-out' : ''
+                      }`}
+                      style={{
+                        transitionDelay: `${index * 100}ms`
+                      }}
                       to={`/products/${product.handle}`}
                     >
                       <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">

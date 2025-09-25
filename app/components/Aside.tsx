@@ -1,3 +1,5 @@
+import {CloseIcon} from './Icons';
+
 /**
  * A side bar component with Overlay that works without JavaScript.
  * @example
@@ -12,10 +14,12 @@ export function Aside({
   children,
   heading,
   id = 'aside',
+  type,
 }: {
   children?: React.ReactNode;
   heading: React.ReactNode;
   id?: string;
+  type?: string;
 }) {
   return (
     <div aria-modal className="overlay" id={id} role="dialog">
@@ -27,8 +31,11 @@ export function Aside({
         }}
       />
       <aside>
-        <header>
-          <h3>{heading}</h3>
+        <header className="aside-header">
+          <div className="aside-title-section">
+            <h3>{heading}</h3>
+            {type === 'cart' && <CartCountBadge />}
+          </div>
           <CloseAside />
         </header>
         <main>{children}</main>
@@ -37,11 +44,17 @@ export function Aside({
   );
 }
 
+function CartCountBadge() {
+  // This would need to be connected to cart data in a real implementation
+  // For now, we'll return null to avoid the duplicate
+  return null;
+}
+
 function CloseAside() {
   return (
     /* eslint-disable-next-line jsx-a11y/anchor-is-valid */
     <a className="close" href="#" onChange={() => history.go(-1)}>
-      &times;
+      <CloseIcon size={20} />
     </a>
   );
 }

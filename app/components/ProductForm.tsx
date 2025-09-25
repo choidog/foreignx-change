@@ -1,11 +1,14 @@
 import {Link, useNavigate} from 'react-router';
-import {type MappedProductOptions} from '@shopify/hydrogen';
+import {useState} from 'react';
+import {type MappedProductOptions, CartForm} from '@shopify/hydrogen';
 import type {
   Maybe,
   ProductOptionValueSwatch,
 } from '@shopify/hydrogen/storefront-api-types';
 import {AddToCartButton} from './AddToCartButton';
+import {BuyNowButton} from './BuyNowButton';
 import {useAside} from './Aside';
+import {ShoppingBagIcon} from './Icons';
 import type {ProductFragment} from 'storefrontapi.generated';
 
 export function ProductForm({
@@ -17,6 +20,14 @@ export function ProductForm({
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
+  const [quantity, setQuantity] = useState(1);
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity >= 1) {
+      setQuantity(newQuantity);
+    }
+  };
+
   return (
     <div className="product-form">
       {productOptions.map((option) => {
@@ -101,28 +112,77 @@ export function ProductForm({
           </div>
         );
       })}
-      <AddToCartButton
-        disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          open('cart');
-        }}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                  selectedVariant,
-                },
-              ]
-            : []
-        }
-      >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
-      </AddToCartButton>
+      
+      <div className="quantity-selector">
+        <button 
+          className="quantity-btn quantity-decrease"
+          onClick={() => handleQuantityChange(quantity - 1)}
+          disabled={quantity <= 1}
+        >
+          −
+        </button>
+        <input 
+          type="number" 
+          value={quantity} 
+          onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
+          className="quantity-input"
+          min="1"
+        />
+        <button 
+          className="quantity-btn quantity-increase"
+          onClick={() => handleQuantityChange(quantity + 1)}
+        >
+          +
+        </button>
+      </div>
+      
+      <div className="product-actions">
+        <AddToCartButton
+          disabled={!selectedVariant || !selectedVariant.availableForSale}
+          onClick={() => {
+            open('cart');
+          }}
+          lines={
+            selectedVariant
+              ? [
+                  {
+                    merchandiseId: selectedVariant.id,
+                    quantity: quantity,
+                    selectedVariant,
+                  },
+                ]
+              : []
+          }
+        >
+          <ShoppingBagIcon size={16} className="mr-2" />
+          Add to cart
+        </AddToCartButton>
+        
+        <BuyNowButton
+          disabled={!selectedVariant || !selectedVariant.availableForSale}
+          lines={
+            selectedVariant
+              ? [
+                  {
+                    merchandiseId: selectedVariant.id,
+                    quantity: quantity,
+                    selectedVariant,
+                  },
+                ]
+              : []
+          }
+        >
+          Buy with <span className="shop-logo">shop</span>
+        </BuyNowButton>
+      </div>
+      
+      <div className="payment-options">
+        <a href="#" className="more-payment-options">More payment options</a>
+      </div>
     </div>
   );
 }
+
 
 function ProductOptionSwatch({
   swatch,

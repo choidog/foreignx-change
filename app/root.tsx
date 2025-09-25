@@ -75,6 +75,12 @@ export async function loader(args: LoaderFunctionArgs) {
 
   const {storefront, env} = args.context;
 
+  // Debug analytics configuration
+  const checkoutDomain = env.PUBLIC_CHECKOUT_DOMAIN || env.PUBLIC_STORE_DOMAIN;
+  if (!checkoutDomain) {
+    console.warn('Analytics disabled: No checkout domain available. Set PUBLIC_CHECKOUT_DOMAIN or PUBLIC_STORE_DOMAIN environment variable.');
+  }
+
   return {
     ...deferredData,
     ...criticalData,
@@ -84,7 +90,7 @@ export async function loader(args: LoaderFunctionArgs) {
       publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
     }),
     consent: {
-      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
+      checkoutDomain,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
       withPrivacyBanner: false,
       // localize the privacy banner
@@ -157,7 +163,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        {data ? (
+        {data && data.consent.checkoutDomain ? (
           <Analytics.Provider
             cart={data.cart}
             shop={data.shop}
@@ -166,7 +172,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
             <ConditionalLayout>{children}</ConditionalLayout>
           </Analytics.Provider>
         ) : (
-          children
+          <ConditionalLayout>{children}</ConditionalLayout>
         )}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
