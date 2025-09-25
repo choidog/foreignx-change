@@ -1,5 +1,5 @@
 import type {V2_MetaFunction} from '@shopify/remix-oxygen';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {AnimatedSlideshow} from '~/components/AnimatedSlideshow';
 import SpotlightCard from '~/components/SpotlightCard';
 
@@ -10,6 +10,16 @@ export const meta: V2_MetaFunction = () => {
 export default function Index() {
   console.log('Index route: Rendering entrance page');
   const [isFading, setIsFading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 200); // Small delay to ensure smooth transition
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleEnterClick = () => {
     setIsFading(true);
@@ -46,7 +56,14 @@ export default function Index() {
         opacity: isFading ? 0 : 1,
         transition: 'opacity 1s ease-out'
       }}>
-        <div style={{textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <div style={{
+          textAlign: 'center', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          opacity: isLoaded ? 1 : 0,
+          transition: 'opacity 1.5s ease-in-out'
+        }}>
           <img 
             src="/logo.webp" 
             alt="Foreign X-Change" 
