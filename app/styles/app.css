@@ -1385,7 +1385,7 @@ button.reset:hover:not(:has(> *)) {
 .scroll-carousel {
   display: flex;
   gap: 15px;
-  animation: scroll 40s linear infinite;
+  animation: scroll 160s linear infinite;
 }
 
 .scroll-carousel:hover {

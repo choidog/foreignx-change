@@ -42,7 +42,7 @@ export default function Index() {
               width: '600px',
               height: '600px',
               objectFit: 'contain',
-              marginBottom: '3rem'
+              marginBottom: '0'
             }}
           />
           <SpotlightCard 
@@ -52,14 +52,13 @@ export default function Index() {
             <button 
               onClick={() => window.location.href = '/home'}
               style={{
-                padding: '1rem 2rem',
+                padding: '0.5rem 2rem',
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
                 backgroundColor: 'transparent',
                 color: 'white',
                 border: 'none',
                 cursor: 'pointer',
-                width: '100%',
                 textAlign: 'center'
               }}
             >

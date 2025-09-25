@@ -39,7 +39,7 @@ export function ScrollCarouselComponent({
           gap: `${margin}px`,
           overflow: 'hidden',
           // Use CSS animation for smooth scrolling
-          animation: 'scroll 40s linear infinite'
+          animation: 'scroll 300s linear infinite'
         }}
       >
         {/* Duplicate images for seamless loop */}
